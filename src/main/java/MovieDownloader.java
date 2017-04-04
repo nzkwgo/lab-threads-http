@@ -37,10 +37,12 @@ public class MovieDownloader {
 
 			URL url = new URL(urlString);
 
+			//Connect to the site
 			urlConnection = (HttpURLConnection) url.openConnection();
 			urlConnection.setRequestMethod("GET");
 			urlConnection.connect();
 
+			//set the input stream as the data at the url
 			InputStream inputStream = urlConnection.getInputStream();
 			StringBuffer buffer = new StringBuffer();
 			if (inputStream == null) {
@@ -48,15 +50,19 @@ public class MovieDownloader {
 			}
 			reader = new BufferedReader(new InputStreamReader(inputStream));
 
+			//Separate the stream by adding line breaks at each stringbuffer
 			String line = reader.readLine();
 			while (line != null) {
 				buffer.append(line + "\n");
 				line = reader.readLine();
 			}
 
+			//if there's no string buffer return null
 			if (buffer.length() == 0) {
 				return null;
 			}
+
+			//Parse each line into JSON and add it to the movies list
 			String results = buffer.toString();
 			results = results.replace("{\"Search\":[","");
 			results = results.replace("]}","");
@@ -64,9 +70,11 @@ public class MovieDownloader {
 
 			movies = results.split("\n");
 		} 
+		//If the search for movies fails return null
 		catch (IOException e) {
 			return null;
 		} 
+		//Close all the open threads and disconnect the connection
 		finally {
 			if (urlConnection != null) {
 				urlConnection.disconnect();
